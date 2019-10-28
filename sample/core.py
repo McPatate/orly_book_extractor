@@ -1,6 +1,8 @@
-from extractor import Extractor
+from .extractor import Extractor
 from ebooklib import epub
 
 class BookGeneration():
     def __init__(self):
-        print("henlo")
+        extractor = Extractor()
+        extractor.sign_in()
+        print(extractor.jwt)

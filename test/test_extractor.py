@@ -1,7 +1,7 @@
 import unittest
 from sample import extractor
 
-class Cookie():
+class TestCookie():
     def __init__(self, name, value):
         self.name = name
         self.value = value
@@ -11,7 +11,7 @@ class TestHttpReq(unittest.TestCase):
         self.extractor = extractor.Extractor()
 
     def test_setting_cookies(self):
-        cookies = [Cookie("cookie1", "value1"), Cookie("cookie2", "value2")]
+        cookies = [TestCookie("cookie1", "value1"), TestCookie("cookie2", "value2")]
         self.extractor.set_cookies(cookies)
         self.assertEqual(self.extractor.get_cookies(), "cookie1=value1; cookie2=value2;")
 
