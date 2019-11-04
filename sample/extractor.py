@@ -16,7 +16,7 @@ class Extractor():
 
     BOOK_URL = SAFARI_BASE_URL + "/api/v1/book/{0}/"
 
-    def __init__(self, book_id):
+    def __init__(self, book_id, user_email, user_password):
         self.jwt = {}
         self.cookies = {}
         self.headers = {
@@ -34,6 +34,8 @@ class Extractor():
         }
         self.book_id = book_id
         self.BOOK_URL = self.BOOK_URL.format(self.book_id)
+        self.user_email = user_email
+        self.user_password = user_password
 
     def set_cookies(self, jar):
         for cookie in jar:
@@ -84,8 +86,8 @@ class Extractor():
             self.LOGIN_URL,
             "post",
             json={
-                "email": "luc.georges@zenika.com",
-                "password": "cJx6ffWpUetu5Zt",
+                "email": self.user_email,
+                "password": self.user_password,
                 "redirect_uri": redirect_uri
             },
             perform_redirect=False
