@@ -7,30 +7,35 @@ class TestCookie():
         self.value = value
 
 class TestHttpReq(unittest.TestCase):
+    ClassIsSetup = False
+
     def setUp(self):
-        self.extractor = extractor.Extractor()
+        if not self.ClassIsSetup:
+            print("Initializing testing environment")
+            self.setupClass()
+            self.__class__.ClassIsSetup = True
+                                
+    def setupClass(self):
+        unittest.TestCase.setUp(self)
+        self.__class__.extractor = extractor.Extractor("9781491927274")
+        self.extractor.sign_in()
 
     def test_setting_cookies(self):
         cookies = [TestCookie("cookie1", "value1"), TestCookie("cookie2", "value2")]
         self.extractor.set_cookies(cookies)
-        self.assertEqual(self.extractor.get_cookies(), "cookie1=value1; cookie2=value2;")
+        self.assertIn("cookie1=value1; cookie2=value2;", self.extractor.get_cookies())
 
     def test_setting_header(self):
         self.extractor.set_header("origin", "https://www.google.com")
-        self.assertEqual(self.extractor.get_headers(), {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-            "accept-encoding": "gzip, deflate",
-            "accept-language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
-            "cache-control": "no-cache",
-            "cookie": "",
-            "pragma": "no-cache",
-            "origin": "https://www.google.com",
-            "referer": "https://learning.oreilly.com/login/unified/?next=/home/",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                        "Chrome/60.0.3112.113 Safari/537.36",
-        })
+        self.assertEqual(self.extractor.get_headers()['origin'], "https://www.google.com")
 
     def test_http_req(self):
         res = self.extractor.http_req('https://www.google.com', "get")
         self.assertEqual(res.status_code, 200)
+
+    def test_sign_in(self):
+        self.assertIsNot(self.extractor.jwt, {})
+
+    def test_get_book_info(self):
+        book_info = self.extractor.get_book_info()
+        self.assertEqual(book_info['url'], "https://learning.oreilly.com/api/v1/book/9781491927274/")

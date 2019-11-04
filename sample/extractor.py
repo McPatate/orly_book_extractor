@@ -16,7 +16,7 @@ class Extractor():
 
     BOOK_URL = SAFARI_BASE_URL + "/api/v1/book/{0}/"
 
-    def __init__(self):
+    def __init__(self, book_id):
         self.jwt = {}
         self.cookies = {}
         self.headers = {
@@ -32,6 +32,8 @@ class Extractor():
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                         "Chrome/60.0.3112.113 Safari/537.36",
         }
+        self.book_id = book_id
+        self.BOOK_URL = self.BOOK_URL.format(self.book_id)
 
     def set_cookies(self, jar):
         for cookie in jar:
@@ -58,18 +60,22 @@ class Extractor():
                 json=json,
                 allow_redirects=False,
             )
-        self.set_cookies(res.cookies)
-        self.set_header("cookie", self.get_cookies())
-        self.set_header("referer", res.request.url)
-        if res.is_redirect and perform_redirect:
-            return self.http_req(res.next.url, method, json, perform_redirect)
+        try:
+            self.set_cookies(res.cookies)
+            self.set_header("cookie", self.get_cookies())
+            self.set_header("referer", res.request.url)
+            if res.is_redirect and perform_redirect:
+                return self.http_req(res.next.url, method, json, perform_redirect)
+        except:
+            print(f"http_req: error requesting {url}")
+            return None
         return res
 
     def sign_in(self):
-        print("logging in")
+        print("sign_in: logging in")
         res = self.http_req(self.LOGIN_ENTRY_URL, "get")
         if res == 0:
-            print("entr url req failed")
+            print("sign_in: entry url req failed")
         redirect_uri = res.request.path_url[res.request.path_url.index("redirect_uri"):]
         redirect_uri = redirect_uri[:redirect_uri.index("&")]
         redirect_uri = "https://api.oreilly.com%2Fapi%2Fv1%2Fauth%2Fopenid%2Fauthorize%3F" + redirect_uri
@@ -86,14 +92,23 @@ class Extractor():
         )
         if res == 0 or res.status_code != 200:
             print(res.headers)
-            print("login url req failed")
+            print("sign_in: login url req failed")
         self.jwt = res.json()
         res = self.http_req(self.jwt["redirect_uri"], "get")
         if res == 0:
-            print("jwt redirect req failed")
+            print("sign_in: jwt redirect req failed")
+        print("sign_in: login successful")
 
-    def get_book_info(self, id):
-        print("infos !")
+    def get_book_info(self):
+        res = self.http_req(self.BOOK_URL, "get")
+        if res == 0:
+            print("get_book_info: book info req failed")
+        try:
+            res = res.json()
+        except ValueError:
+            print("get_book_info: invalid json")
+            return None
+        return res
 
     def get_book_chapters(self, id):
         print("book chapters!")
