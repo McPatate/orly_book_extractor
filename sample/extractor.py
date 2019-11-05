@@ -34,6 +34,7 @@ class Extractor():
         }
         self.book_id = book_id
         self.BOOK_URL = self.BOOK_URL.format(self.book_id)
+        self.content_url = f"{self.BOOK_URL}chapter-content/"
         self.user_email = user_email
         self.user_password = user_password
 
@@ -112,5 +113,35 @@ class Extractor():
             return None
         return res
 
-    def get_book_chapters(self, id):
-        print("book chapters!")
+    def get_chapter_info(self, url):
+        res = self.http_req(url, "get")
+        if res == 0:
+            print("get_chapter_info: chapter info req failed")
+        try:
+            res = res.json()
+        except ValueError:
+            print("get_chapter_info: invalid json")
+            return None
+        return res
+
+    def get_chapter_content(self, content_url):
+        res = self.http_req(content_url, "get")
+        if res == 0:
+            print("get_chapter_content: chapter content req failed")
+        try:
+            res = res.text
+        except ValueError:
+            print("get_chapter_content: invalid response")
+            return None
+        return res
+
+    def get_toc(self):
+        res = self.http_req(f"{self.BOOK_URL}toc", "get")
+        if res == 0:
+            print("get_toc: toc req failed")
+        try:
+            res = res.json()
+        except ValueError:
+            print("get_toc: invalid json")
+            return None
+        return res

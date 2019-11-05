@@ -1,3 +1,4 @@
+import os
 import unittest
 from sample import extractor
 
@@ -17,7 +18,7 @@ class TestHttpReq(unittest.TestCase):
                                 
     def setupClass(self):
         unittest.TestCase.setUp(self)
-        self.__class__.extractor = extractor.Extractor("9781491927274")
+        self.__class__.extractor = extractor.Extractor("9781491927274", os.environ['EMAIL'], os.environ['PSWD'])
         self.extractor.sign_in()
 
     def test_setting_cookies(self):
@@ -38,4 +39,16 @@ class TestHttpReq(unittest.TestCase):
 
     def test_get_book_info(self):
         book_info = self.extractor.get_book_info()
-        self.assertEqual(book_info['url'], "https://learning.oreilly.com/api/v1/book/9781491927274/")
+        self.assertEqual(book_info["url"], "https://learning.oreilly.com/api/v1/book/9781491927274/")
+
+    def test_get_chapter_info(self):
+        chapter_info = self.extractor.get_chapter_info("https://learning.oreilly.com/api/v1/book/9781491927274/chapter/ch06.html")
+        self.assertEqual(chapter_info["content"], "https://learning.oreilly.com/api/v1/book/9781491927274/chapter-content/ch06.html")
+
+    def test_get_chapter_content(self):
+        chapter_content = self.extractor.get_chapter_content("https://learning.oreilly.com/api/v1/book/9781491927274/chapter-content/ch06.html")
+        self.assertIn('<section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 6. Expressions">', chapter_content)
+
+    def test_get_toc(self):
+        toc = self.extractor.get_toc()
+        self.assertEqual(toc[0]["fragment"], "preface")

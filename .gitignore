@@ -105,3 +105,4 @@ venv.bak/
 
 todo.txt
 .credentials
+setenv.fish
