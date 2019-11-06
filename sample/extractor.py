@@ -34,7 +34,6 @@ class Extractor():
         }
         self.book_id = book_id
         self.BOOK_URL = self.BOOK_URL.format(self.book_id)
-        self.content_url = f"{self.BOOK_URL}chapter-content/"
         self.user_email = user_email
         self.user_password = user_password
 
