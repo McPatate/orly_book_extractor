@@ -106,5 +106,6 @@ venv.bak/
 todo.txt
 .credentials
 setenv.fish
-/.DS_Store
-*/*test*
+.DS_Store
+test*
+.vscode
