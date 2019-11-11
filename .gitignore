@@ -106,5 +106,5 @@ venv.bak/
 todo.txt
 .credentials
 setenv.fish
-.DS_Store
+/.DS_Store
 */*test*
