@@ -107,5 +107,7 @@ todo.txt
 .credentials
 setenv.fish
 .DS_Store
-test*
 .vscode
+*.epub
+*.json
+get_json_stuff.py

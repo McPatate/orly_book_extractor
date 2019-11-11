@@ -55,12 +55,13 @@ class Extractor():
     def get_headers(self):
         return self.headers
 
-    def http_req(self, url, method, json=None, perform_redirect=True):
+    def http_req(self, url, method, json=None, perform_redirect=True, stream=False):
         res = getattr(requests, method)(
                 url,
                 headers=self.get_headers(),
                 json=json,
                 allow_redirects=False,
+                stream=stream
             )
         try:
             self.set_cookies(res.cookies)
@@ -137,11 +138,22 @@ class Extractor():
     def get_chapter_style(self, url):
         res = self.http_req(url, "get")
         if res == 0:
-            print("get_chapter_info: chapter info req failed")
+            print("get_chapter_info: style req failed")
         try:
             res = res.text
         except ValueError:
             print("get_chapter_style: invalid response")
+            return None
+        return res
+
+    def get_chapter_image(self, url):
+        res = self.http_req(url, "get", stream=True)
+        if res == 0:
+            print("get_chapter_image: image req failed")
+        try:
+            res = res.raw.read()
+        except ValueError:
+            print("get_chapter_image: invalid response")
             return None
         return res
 
