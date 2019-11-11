@@ -1,5 +1,6 @@
 from .extractor import Extractor
 from ebooklib import epub as ebooklib
+import json
 
 class BookGeneration():
     def __init__(self, book_id, user_email, user_password):
@@ -9,7 +10,7 @@ class BookGeneration():
         self.info = self.extractor.get_book_info()
         self.lang = self.info["language"]
         self.title = self.info["title"]
-        self.chapter_spine = []
+        self.chapters = ["nav"]
 
     def add_authors(self):
         for author in self.info["authors"]:
@@ -27,16 +28,29 @@ class BookGeneration():
     def create_images(self):
         print("helo")
 
-    def create_book_chapter(self): # pass info from toc
-        # get chapter info
-        #   * fetch images
-        #   * fetch page assets
-        c1 = ebooklib.EpubHtml(title='Introduction',
-                        file_name='intro.xhtml',
-                        lang=self.lang)
-        # get chapter content
-        c1.set_content(u'<html><body><h1>Introduction</h1><p>Introduction paragraph.</p></body></html>')
-        return c1
+    # TODO
+    #   parse html and change links to :
+    #     * assets
+    #     * imgs
+    #   get :
+    #     * fetch images
+    #     * fetch page assets
+    def create_book_chapter(self, chapter_url): # pass info from toc
+        chapter_info = self.extractor.get_chapter_info(chapter_url)
+        chapter_content = self.extractor.get_chapter_content(chapter_info["content"])
+        if chapter_info != None and chapter_content != None:
+            chapter = ebooklib.EpubHtml(title=chapter_info["title"],
+                            file_name=chapter_info["full_path"].replace("html", "xhtml"),
+                            lang=self.lang)
+            chapter.set_content(chapter_content)
+            self.chapters.append(chapter)
+            self.epub.add_item(chapter)
+        else:
+            print("create_book_chapter: errored on ", chapter_url)
+
+    def create_toc(self):
+        toc = self.extractor.get_toc()
+        self.epub.toc = (toc)
 
     def create_book(self):
         self.epub = ebooklib.EpubBook()
@@ -44,10 +58,9 @@ class BookGeneration():
         self.epub.set_language(self.lang)
         self.epub.set_title(self.title)
         self.add_authors()
-        # get orly toc and loop on each element
-        #   create each chapter
-        self.epub.toc = ()
-        self.epub.spine = self.chapter_spine
+        for chapter_url in self.info["chapters"]:
+            self.create_book_chapter(chapter_url)
+        self.epub.spine = self.chapters
         self.epub.add_item(ebooklib.EpubNcx())
         self.epub.add_item(ebooklib.EpubNav())
-        ebooklib.write_epub(f"./{self.title}_{self.id}.epub", self.epub)
+        ebooklib.write_epub(f"./{self.title}.epub", self.epub)
