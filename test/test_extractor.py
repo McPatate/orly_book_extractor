@@ -49,6 +49,10 @@ class TestHttpReq(unittest.TestCase):
         chapter_content = self.extractor.get_chapter_content("https://learning.oreilly.com/api/v1/book/9781491927274/chapter-content/ch06.html")
         self.assertIn('<section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 6. Expressions">', chapter_content)
 
+    def test_get_chapter_style(self):
+        chapter_style = self.extractor.get_chapter_style("https://learning.oreilly.com/library/css/programming-rust/9781491927274/epub.css")
+        self.assertIn('@charset "utf-8";#sbo-rt-content html', chapter_style)
+
     def test_get_toc(self):
         toc = self.extractor.get_toc()
         self.assertEqual(toc[0]["fragment"], "preface")

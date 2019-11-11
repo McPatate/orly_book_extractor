@@ -10,20 +10,22 @@ class BookGeneration():
         self.info = self.extractor.get_book_info()
         self.lang = self.info["language"]
         self.title = self.info["title"]
-        self.chapters = ["nav"]
+        self.chapters = []
+        self.styles = []
 
     def add_authors(self):
         for author in self.info["authors"]:
             self.epub.add_author(author["name"])
 
-    def create_book_style(self):
-        style = 'body { font-family: Times, Times New Roman, serif; }'
-
-        nav_css = ebooklib.EpubItem(uid="style_nav",
-                                file_name="style/nav.css",
-                                media_type="text/css",
-                                content=style)
-        self.epub.add_item(nav_css)
+    def create_book_style(self, css_url):
+        if css_url not in self.styles:
+            style = self.extractor.get_chapter_style(css_url)
+            nav_css = ebooklib.EpubItem(uid="style_nav",
+                                    file_name="style/nav.css",
+                                    media_type="text/css",
+                                    content=style)
+            self.epub.add_item(nav_css)
+            self.styles.append(css_url)
 
     def create_images(self):
         print("helo")

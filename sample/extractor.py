@@ -134,6 +134,17 @@ class Extractor():
             return None
         return res
 
+    def get_chapter_style(self, url):
+        res = self.http_req(url, "get")
+        if res == 0:
+            print("get_chapter_info: chapter info req failed")
+        try:
+            res = res.text
+        except ValueError:
+            print("get_chapter_style: invalid response")
+            return None
+        return res
+
     def get_toc(self):
         res = self.http_req(f"{self.BOOK_URL}toc", "get")
         if res == 0:
