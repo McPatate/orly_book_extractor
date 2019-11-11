@@ -29,11 +29,8 @@ class BookGeneration():
     # TODO
     #   parse html and change links to :
     #     * assets
-    #     * imgs
-    #   get :
-    #     * fetch images
-    #     * fetch page assets
-    def create_book_chapter(self, chapter_url): # pass info from toc
+    #     * other pages
+    def create_book_chapter(self, chapter_url):
         chapter_info = self.extractor.get_chapter_info(chapter_url)
         chapter_content = self.extractor.get_chapter_content(chapter_info["content"])
         if chapter_info != None and chapter_content != None:
@@ -59,10 +56,6 @@ class BookGeneration():
             self.create_images(chapter_info["images"], chapter_info["asset_base_url"])
         else:
             print("create_book_chapter: errored on ", chapter_url)
-
-    def create_toc(self):
-        toc = self.extractor.get_toc()
-        self.epub.toc = (toc)
 
     def create_book(self):
         self.epub = ebooklib.EpubBook()

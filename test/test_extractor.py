@@ -58,7 +58,3 @@ class TestHttpReq(unittest.TestCase):
         with open("test/test.png", "rb") as fd:
             test_img = fd.read()
         self.assertEqual(chapter_image, test_img)
-
-    def test_get_toc(self):
-        toc = self.extractor.get_toc()
-        self.assertEqual(toc[0]["fragment"], "preface")

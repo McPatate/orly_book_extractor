@@ -156,14 +156,3 @@ class Extractor():
             print("get_chapter_image: invalid response")
             return None
         return res
-
-    def get_toc(self):
-        res = self.http_req(f"{self.BOOK_URL}toc", "get")
-        if res == 0:
-            print("get_toc: toc req failed")
-        try:
-            res = res.json()
-        except ValueError:
-            print("get_toc: invalid json")
-            return None
-        return res
