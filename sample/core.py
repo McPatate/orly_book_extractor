@@ -37,7 +37,7 @@ class BookGeneration():
             title = chapter_info["title"]
             print(f"create_book_chapter: creating {title}")
             chapter = ebooklib.EpubHtml(title=title,
-                            file_name=chapter_info["full_path"].replace("html", "xhtml"),
+                            file_name=chapter_info["full_path"],
                             lang=self.lang)
             chapter.set_content(chapter_content)
             for stylesheet in chapter_info["stylesheets"]:
